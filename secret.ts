@@ -10,6 +10,9 @@ export const ENV_PORT = process.env.PORT;
 export const ENV_NODE_ENV = process.env.NODE_ENV;
 export const ENV_FE_BASE_URL = process.env.FE_BASE_URL;
 
+export const MONGO_URI = process.env.MONGO_URI;
+export const MONGO_DB_NAME = process.env.MONOG_DB_NAME;
+
 export const ENV_DB_NAME = process.env.DB_NAME;
 export const ENV_DB_USER = process.env.DB_USER;
 export const ENV_DB_HOST = process.env.DB_HOST;
