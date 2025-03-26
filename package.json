@@ -2,9 +2,11 @@
   "name": "backend_dbms_term_project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env ENVIRONMENT=local  node dist/app.js",
+    "dev": "npx tsc && npm start"
   },
   "repository": {
     "type": "git",
@@ -36,6 +38,7 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.13.0"
   }
 }
