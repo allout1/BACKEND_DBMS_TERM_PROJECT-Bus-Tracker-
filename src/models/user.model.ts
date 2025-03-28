@@ -1,17 +1,17 @@
 import mongoose, { Schema } from "mongoose";
 
 export const UserRolesEnum = {
-  ADMIN: "ADMIN",
-  USER: "USER",
+  ADMIN: "admin",
+  USER: "user",
+  DRIVER: "driver"
 };
 export const AvailableUserRoles = Object.values(UserRolesEnum);
 
-const userSchema = new Schema(
+const UserSchema = new Schema(
   {
     username: {
       type: String,
       required: true,
-      lowercase: true,
       trim: true,
     },
     email: {
@@ -30,7 +30,14 @@ const userSchema = new Schema(
     password: {
       type: String,
       required: [true, "Password is required"],
+      select: false
+    },
+    socket_id: {
+      type: String,
+      default: ''
     }
   },
   { timestamps: true }
 );
+
+export const User = mongoose.model('User',UserSchema);

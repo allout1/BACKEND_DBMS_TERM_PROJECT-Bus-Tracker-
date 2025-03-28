@@ -1,4 +1,4 @@
-// import { iUser } from "../modules/auth/auth.interface";
+import { iUser } from "../modules/auth/auth.interface";
 
 export interface signedTokenObj {
 	access_token: string,
@@ -7,6 +7,6 @@ export interface signedTokenObj {
 
 export interface iJwtService {
 	generateAccessToken: (payload: any) => any;
-	// verifyToken: (accessToken: string,secret?: string) => (iUser | null );
+	verifyToken: (accessToken: string,secret?: string) => (iUser | null );
 	// generateRefreshToken: (payload: any) => any;
 }

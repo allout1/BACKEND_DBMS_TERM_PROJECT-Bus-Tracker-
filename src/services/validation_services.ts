@@ -59,19 +59,8 @@ export class ValidationService implements iValidationService {
         name: string,
         data: any
     ): boolean {
-        if(data != 'citizen' && data != 'admin' && data!='employee' && data!='monitor'){
-            throw `Please enter a valid ${name}. Role can be either 'citizen', 'admin', 'employee' or 'monitor'`;
-        }
-        return true;
-    }
-
-    validEducation(
-        name: string,
-        data: any
-    ): boolean {
-        const educational_status = ['illiterate', 'primary' ,'secondary', '10th', '12th', 'graduate', 'post-graduate', 'phd']
-        if(!educational_status.includes(data)){
-            throw `Please enter a valid ${name}. Educational status can be either 'illiterate', 'primary' ,'secondary', '10th', '12th', 'graduate', 'post-graduate' or 'phd'`;
+        if(data != 'user' && data != 'admin' && data!='driver'){
+            throw `Please enter a valid ${name}. Role can be either 'user', 'admin', or 'driver'`;
         }
         return true;
     }
@@ -113,16 +102,5 @@ export class ValidationService implements iValidationService {
         }
         return true;
         
-    }
-
-    validAadhar(name: string, data: any): boolean {
-        if(data == null || data == "" || data == undefined) {
-            throw `${name} is invalid. Please enter a valid ${name}`;
-        }
-        const regex = /^[0-9]{12}$/;
-        if(!regex.test(data)){
-            throw `${name} is invalid. Please enter a valid ${name}`;
-        }
-        return true;
     }
 }
