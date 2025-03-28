@@ -103,4 +103,13 @@ export class ValidationService implements iValidationService {
         return true;
         
     }
+    validCoordinates(name: string, data: any): boolean {
+        if (!Array.isArray(data) || data.length!=2) {
+            throw `${name} is invalid. Please enter a valid ${name}`;
+        }
+        if (!this.validNumber("Latitude", data[0]) || !this.validNumber("Longitude", data[1])) {
+            throw `${name} is invalid. Please enter a valid ${name}`;
+        }
+        return true;
+    }
 }

@@ -9,4 +9,5 @@ export interface iValidationService {
     validDate:(name: string, data: any) => boolean;
     validOtp:(name: string, data: any) => boolean;
     validGender:(name: string, data: any) => boolean;
+    validCoordinates:(name: string, data: any) => boolean;
 }
