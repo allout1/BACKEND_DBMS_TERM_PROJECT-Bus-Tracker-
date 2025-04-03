@@ -4,9 +4,14 @@ import cookie from 'cookie-parser'
 import { ENV_FE_BASE_URL, ENV_PORT } from './secret';
 import RouterConfig from './src/config/router_config';
 import BUS_TRACK_DB from './src/config/db/db.config';
+import http from 'http';
+import SocketService from './src/services/socket';
 
 const app: express.Application = express();
 const port = ENV_PORT;
+const server = http.createServer(app);
+const socketService = new SocketService();
+socketService._io.attach(server);
 
 app.use(cors({
     origin: [
@@ -31,6 +36,8 @@ const dbConn = BUS_TRACK_DB.getConnection().then((conn)=>{
 // Listen on the server
 const runningMessage = `Server running at port : ${port}`
 
-app.listen(port, () => {
+server.listen(port, () => {
     console.log(runningMessage);
 });
+
+socketService.initListeners();
