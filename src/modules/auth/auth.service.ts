@@ -163,14 +163,12 @@ export class AuthService implements iAuthService {
             // generate jwt
             const access_token = this.jwtService.generateAccessToken(myUser);
 
-            const cookie_data = [
-                {
-                    name: "access_token",
-                    value: access_token
-                }
-            ]
+            const result = {
+                access_token: access_token,
+                user: myUser
+            }
 
-            response = setResponse(response, eStatusCode.OK, false,"User logged in successfully", myUser, cookie_data);
+            response = setResponse(response, eStatusCode.OK, false,"User logged in successfully", result);
             return response;
         } catch (error) {
             console.log("error: ", error);
