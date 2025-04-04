@@ -9,19 +9,32 @@ const BusSchema = new Schema({
         trim:true
     },
     bus_location: {
-        type:Location,
-        required:true
+        type: Schema.Types.ObjectId,
+        ref: 'Location',
+        required: true
     },
-    stoppage:{
-        type:[Location],
-        required:true,
-        validate: {
-            validator: function(v:any) {
-              return Array.isArray(v) && v.length > 0;
+    stoppage: {
+        type: [
+          {
+            location: {
+              type: Schema.Types.ObjectId,
+              ref: "Location",
+              required: true,
             },
-            message: "At least one stoppage is required."
-          }
-    },
+            time: {
+              type: Number,
+              required: true,
+            },
+          },
+        ],
+        required: true,
+        validate: {
+          validator: function (v:any) {
+            return Array.isArray(v) && v.length > 0;
+          },
+          message: "At least one stoppage is required.",
+        },
+      },
     driver:{
         type:Schema.Types.ObjectId,
         ref:'User',
@@ -31,3 +44,4 @@ const BusSchema = new Schema({
 
 },{timestamps:true}
 );
+export const BusModel= mongoose.model("BusModel", BusSchema);

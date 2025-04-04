@@ -2,6 +2,7 @@ import express from 'express';
 import { CommonRoutesConfig } from './common.route.config';
 import { AuthRoutes } from '../../routes/auth.routes';
 import { LocationRoutes } from '../../routes/location.routes';
+import { BusRoutes } from '../../routes/bus.routes';
 
 const apiVersion = 'v1';
 const baseRouterPath = 'api';
@@ -18,6 +19,7 @@ class RouterConfig {
         const routes: Array<CommonRoutesConfig> = [
             new AuthRoutes(this.app,baseRouterPath,apiVersion),
             new LocationRoutes(this.app,baseRouterPath,apiVersion),
+            new BusRoutes(this.app,baseRouterPath,apiVersion),
         ];
         return routes;
     }
