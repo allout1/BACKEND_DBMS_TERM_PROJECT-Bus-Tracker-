@@ -17,7 +17,8 @@ class BusController {
         this.addBus = this.addBus.bind(this);
         this.getAllBuses = this.getAllBuses.bind(this);
         this.getBusByDestination = this.getBusByDestination.bind(this);
-        this.deleteBus = this.deleteBus.bind(this);      
+        this.deleteBus = this.deleteBus.bind(this);   
+        this.getBusById = this.getBusById.bind(this);   
     }
 
     async addBus(
@@ -26,10 +27,9 @@ class BusController {
     ): Promise<void> {
         try {
             const busData :BUS = {
-                bus_number: req.body.bus_number,
-                bus_location_id: req.body.bus_location_id,
+                bus_number: String(req.body.bus_number),
                 stoppage: req.body.stoppage,
-                driver: req.body.driver
+                driver: String(req.body.driver)
             }
             const response = await this.busService.addBus(busData);
             if (response) {
@@ -108,7 +108,7 @@ class BusController {
         res: express.Response
     ): Promise<void> {
         try {
-            const id = String(req.body.id);
+            const id = String(req.query.id);
             const response = await this.busService.deleteBus(id);
             if (response) {
                 responseHandler(
@@ -129,8 +129,32 @@ class BusController {
             );
         }
     }
-   
-
+   async getBusById(
+        req: express.Request,
+        res: express.Response
+    ): Promise<void> {
+        try {
+            const busId = String(req.query.busId);
+            const response = await this.busService.getBusById(busId);
+            if (response) {
+                responseHandler(
+                    res,
+                    response.statusCode,
+                    response.isError,
+                    response.message,
+                    response?.data
+                )
+            }
+        } catch (error) {
+            console.log(error);
+            responseHandler(
+                res,
+                eStatusCode.INTERNAL_SERVER_ERROR,
+                true,
+                error ? `${error}` : eErrorMessage.ServerError
+            );
+        }
+    }
 
 }
 

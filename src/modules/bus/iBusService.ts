@@ -11,6 +11,9 @@ export interface iBusService {
     getBusByDestination: (
         destination: string
     ) => Promise<serviceResponse>;
+    getBusById: (
+        busId: string
+    ) => Promise<serviceResponse>;
     deleteBus: (
         busId: string
     ) => Promise<serviceResponse>;

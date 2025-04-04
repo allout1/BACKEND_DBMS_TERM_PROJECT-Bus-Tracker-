@@ -38,34 +38,9 @@ export class BusService implements iBusService {
                 response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
                 return response;
             }
-            var location: any;
-            if(busData.bus_location_id){
-                location = await Location.findById(busData.bus_location_id);
-                if(!location){
-                    response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Location not found");
-                    return response;
-                }
-            }
-            // now i have array of ids of locations in stoppage
-            // i want to find the location by id and push it to new stoppage array
-            const stoppage = busData.stoppage.map(async (stop) => {
-                const loc= await Location.findById(stop.location_id);
-                if (!loc) {
-                    response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Location not found");
-                    return response;
-                }
-                return { location: location, time: stop.time };
-            });
-            // wait for all the promises to resolve
-            const newBusData = {
-                bus_number: busData.bus_number,
-                bus_location: location,
-                bus_stoppage: stoppage,
-                driver: busData.driver,
-            }
 
             // add a bus to the database bus model
-            const bus = await new BusModel(newBusData).save();
+            const bus = await new BusModel(busData).save();
             if (!bus) {
                 response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not added");
                 return response;
@@ -86,7 +61,11 @@ export class BusService implements iBusService {
         }
         try {
             // get all buses from the database bus model
-            const buses = await BusModel.find({});
+            const buses = await BusModel.find({},{
+                // return only bus_number and id
+                bus_number: 1,
+                _id: 1,
+            });
 
             response = setResponse(response, eStatusCode.OK, false,"Buses fetched successfully",buses);
             return response;
@@ -135,6 +114,35 @@ export class BusService implements iBusService {
             const bus = await BusModel.findByIdAndDelete(id);
 
             response = setResponse(response, eStatusCode.OK, false,"Bus deleted successfully",bus);
+            return response;
+        } catch (error) {
+            console.log("error: ", error);
+            return response;
+        }
+    }
+    async getBusById(
+        busId: string
+    ): Promise<serviceResponse> {
+        let response: serviceResponse = {
+            statusCode: eStatusCode.BAD_REQUEST,
+            isError: true,
+            message: "failed to get bus",
+        }
+        try {
+            try{
+                this.validatorService.validString("BusId", busId);
+            }
+            catch (error: any) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
+                return response;
+            }
+            //in the busModel the driver name and location are saved in the form of id referenced to User and location
+            // respectively.
+            // fetch drivers name and location name as well
+            const bus = await BusModel.findById(busId).populate("driver").populate("stoppage.location");
+            
+            
+            response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
             return response;
         } catch (error) {
             console.log("error: ", error);
