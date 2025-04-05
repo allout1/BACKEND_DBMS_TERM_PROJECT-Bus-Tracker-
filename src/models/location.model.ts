@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { InferSchemaType, Schema } from "mongoose";
 
 const locationSchema = new mongoose.Schema({
   name: {
@@ -23,3 +23,4 @@ const locationSchema = new mongoose.Schema({
 locationSchema.index({ geometry: "2dsphere" });
 export const Location= mongoose.model("Location", locationSchema);
 
+export type LocationType = InferSchemaType<typeof locationSchema>;

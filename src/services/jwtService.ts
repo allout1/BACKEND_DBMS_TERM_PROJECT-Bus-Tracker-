@@ -44,7 +44,7 @@ class JWTService implements iJwtService{
 
             const userObject: iUser = {
                 email: decoded.payload.email,
-                id: decoded.payload.citizen_id,
+                id: decoded.payload.id,
                 role: decoded.payload.role,
                 username: decoded.payload.username
             };
