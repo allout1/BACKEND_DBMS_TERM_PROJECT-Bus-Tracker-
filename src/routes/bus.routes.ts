@@ -1,6 +1,7 @@
 import express from 'express';
 import { CommonRoutesConfig } from '../config/router_config/common.route.config';
 import busController from '../modules/bus/bus.controller';
+import authMiddleware from '../middlewares/auth.middleware';
 
 
 export class BusRoutes extends CommonRoutesConfig {
@@ -28,7 +29,10 @@ export class BusRoutes extends CommonRoutesConfig {
             .delete(busController.deleteBus);
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getByDriver`)
-            .get(busController.getBusByDriver);
+            .get([
+                authMiddleware.verifyToken,
+                busController.getBusByDriver
+            ]);
 
 
         return this.app;
