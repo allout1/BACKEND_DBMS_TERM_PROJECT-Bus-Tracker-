@@ -139,7 +139,15 @@ export class BusService implements iBusService {
             //in the busModel the driver name and location are saved in the form of id referenced to User and location
             // respectively.
             // fetch drivers name and location name as well
-            const bus = await BusModel.findById(busId).populate("driver").populate("stoppage.location");
+            const bus = await BusModel.findById(busId)
+            .select("-__v -createdAt -updatedAt -stoppage._id")
+            .populate({
+                path: "driver",
+                select: "-password -__v -email -createdAt -updatedAt",
+            }).populate({
+                path: "stoppage.location",
+                select: "-__v",
+            });
             
             
             response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
