@@ -149,6 +149,37 @@ export class BusService implements iBusService {
             return response;
         }
     }
+    async getBusByDriver(
+        driver: string
+    ): Promise<serviceResponse> {
+        let response: serviceResponse = {
+            statusCode: eStatusCode.BAD_REQUEST,
+            isError: true,
+            message: "failed to get bus",
+        }
+        try {
+            try{
+                this.validatorService.validString("Driver", driver);
+            }
+            catch (error: any) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
+                return response;
+            }
+
+            // get bus by driver from the database bus model
+            const bus = await BusModel.find({driver},{
+                // return only bus_number and id
+                bus_number: 1,
+                _id: 1,
+            });
+
+            response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
+            return response;
+        } catch (error) {
+            console.log("error: ", error);
+            return response;
+        }
+    }
     
 
 }

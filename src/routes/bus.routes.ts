@@ -26,6 +26,9 @@ export class BusRoutes extends CommonRoutesConfig {
         this.app
             .route(`/${this.basePath}/${this.version}/bus/delete`)
             .delete(busController.deleteBus);
+        this.app
+            .route(`/${this.basePath}/${this.version}/bus/getByDriver`)
+            .get(busController.getBusByDriver);
 
 
         return this.app;

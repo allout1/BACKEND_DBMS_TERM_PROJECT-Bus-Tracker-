@@ -19,6 +19,7 @@ class BusController {
         this.getBusByDestination = this.getBusByDestination.bind(this);
         this.deleteBus = this.deleteBus.bind(this);   
         this.getBusById = this.getBusById.bind(this);   
+        this.getBusByDriver = this.getBusByDriver.bind(this);
     }
 
     async addBus(
@@ -155,7 +156,35 @@ class BusController {
             );
         }
     }
-
+    async getBusByDriver(
+        req: express.Request,
+        res: express.Response
+    ): Promise<void> {
+        try {
+            console.log("body:",req.body.userDetails);
+            const driver = String(req.body.userDetails.id);
+            console.log("driver",driver);
+            const response = await this.busService.getBusByDriver(driver);
+            if (response) {
+                responseHandler(
+                    res,
+                    response.statusCode,
+                    response.isError,
+                    response.message,
+                    response?.data
+                )
+            }
+        } catch (error) {
+            console.log(error);
+            responseHandler(
+                res,
+                eStatusCode.INTERNAL_SERVER_ERROR,
+                true,
+                error ? `${error}` : eErrorMessage.ServerError
+            );
+        }
+    }
+    
 }
 
 const validationServiceInstance = new ValidationService();

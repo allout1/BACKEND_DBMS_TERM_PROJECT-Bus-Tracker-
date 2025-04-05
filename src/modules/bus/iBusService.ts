@@ -18,4 +18,8 @@ export interface iBusService {
         busId: string
     ) => Promise<serviceResponse>;
 
+    getBusByDriver:(
+        driver: string
+    )=> Promise<serviceResponse>;
+
 }
