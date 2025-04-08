@@ -36,6 +36,16 @@ class SocketService {
         console.log(`Client disconnected: ${socket.id}`);
       });
     });
+
+    // Broadcast default coordinates every 5 seconds for all clients
+    // setInterval(() => {
+    //   this.io.emit("bus:locationUpdate", {
+    //     bus_id: "67f03de57c9100e75a0380bf",
+    //     bus_no: "B-100",
+    //     latitude: 22.320336,
+    //     longitude: 87.309468 
+    //   });
+    // }, 5000);
   }
 
   get _io() {

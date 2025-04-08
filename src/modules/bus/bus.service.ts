@@ -175,11 +175,16 @@ export class BusService implements iBusService {
             }
 
             // get bus by driver from the database bus model
-            const bus = await BusModel.find({driver},{
+            const bus = await BusModel.findOne({driver},{
                 // return only bus_number and id
                 bus_number: 1,
                 _id: 1,
             });
+
+            if(!bus) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Driver not registered with any bus");
+                return response;
+            }
 
             response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
             return response;

@@ -59,7 +59,16 @@ export class LocationService implements iLocationService {
             message: "failed to get locations",
         }
         try {
-            const locations = await Location.find();
+            const locations = await Location.aggregate([
+            {
+                $project: {
+                _id: 0,
+                name: 1,
+                coordinates: "$geometry.coordinates"
+                }
+            }
+            ]);
+              
             response = setResponse(response, eStatusCode.OK, false, "Locations fetched successfully", locations);
             return response;
         }
