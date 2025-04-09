@@ -20,6 +20,7 @@ class BusController {
         this.deleteBus = this.deleteBus.bind(this);   
         this.getBusById = this.getBusById.bind(this);   
         this.getBusByDriver = this.getBusByDriver.bind(this);
+        this.assignDriver = this.assignDriver.bind(this);
     }
 
     async addBus(
@@ -30,7 +31,6 @@ class BusController {
             const busData :BUS = {
                 bus_number: String(req.body.bus_number),
                 stoppage: req.body.stoppage,
-                driver: String(req.body.driver)
             }
             const response = await this.busService.addBus(busData);
             if (response) {
@@ -58,7 +58,8 @@ class BusController {
         res: express.Response
     ): Promise<void> {
         try {
-            const response = await this.busService.getAllBuses();
+            const flag = Boolean(req.query.flag);
+            const response = await this.busService.getAllBuses(flag);
             if (response) {
                 responseHandler(
                     res,
@@ -161,10 +162,36 @@ class BusController {
         res: express.Response
     ): Promise<void> {
         try {
-            console.log("body:",req.body.userDetails);
             const driver = String(req.body.userDetails.id);
-            console.log("driver",driver);
             const response = await this.busService.getBusByDriver(driver);
+            if (response) {
+                responseHandler(
+                    res,
+                    response.statusCode,
+                    response.isError,
+                    response.message,
+                    response?.data
+                )
+            }
+        } catch (error) {
+            console.log(error);
+            responseHandler(
+                res,
+                eStatusCode.INTERNAL_SERVER_ERROR,
+                true,
+                error ? `${error}` : eErrorMessage.ServerError
+            );
+        }
+    }
+
+    async assignDriver(
+        req: express.Request,
+        res: express.Response
+    ): Promise<void> {
+        try {
+            const driver = String(req.body.userDetails.id);
+            const busId = String(req.body.busId);
+            const response = await this.busService.assignDriver(busId,driver);
             if (response) {
                 responseHandler(
                     res,

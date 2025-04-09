@@ -48,7 +48,6 @@ class JWTService implements iJwtService{
                 role: decoded.payload.role,
                 username: decoded.payload.username
             };
-            console.log("userObbbbject", userObject);
             return userObject;
         } catch (error) {
             throw error;

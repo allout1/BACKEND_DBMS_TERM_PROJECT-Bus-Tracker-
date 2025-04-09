@@ -17,6 +17,7 @@ export class BusRoutes extends CommonRoutesConfig {
         this.app
             .route(`/${this.basePath}/${this.version}/bus/get`)
             .get(busController.getAllBuses);
+
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getByDestination`)
             .get(busController.getBusByDestination);
@@ -32,6 +33,12 @@ export class BusRoutes extends CommonRoutesConfig {
             .get([
                 authMiddleware.verifyToken,
                 busController.getBusByDriver
+            ]);
+        this.app
+            .route(`/${this.basePath}/${this.version}/bus/assignDriver`)
+            .post([
+                authMiddleware.verifyToken,
+                busController.assignDriver
             ]);
 
 

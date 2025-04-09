@@ -62,7 +62,6 @@ export class LocationService implements iLocationService {
             const locations = await Location.aggregate([
             {
                 $project: {
-                _id: 0,
                 name: 1,
                 coordinates: "$geometry.coordinates"
                 }

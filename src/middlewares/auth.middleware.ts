@@ -26,7 +26,6 @@ class AuthMiddleware {
                 return;
             }
             const userObject: iUser | null = JWTService.verifyToken(token);
-            console.log("userObject", userObject);
             if (!userObject) {
                 throw eErrorMessage.Unauthorised;
             }

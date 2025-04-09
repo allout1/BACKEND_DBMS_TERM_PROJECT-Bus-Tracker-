@@ -7,6 +7,7 @@ export interface iBusService {
     ) => Promise<serviceResponse>;
 
     getAllBuses: (
+        flag: boolean
     ) => Promise<serviceResponse>;
     getBusByDestination: (
         destination: string
@@ -21,5 +22,10 @@ export interface iBusService {
     getBusByDriver:(
         driver: string
     )=> Promise<serviceResponse>;
+
+    assignDriver: (
+        busId: string,
+        driverId: string
+    ) => Promise<serviceResponse>;
 
 }

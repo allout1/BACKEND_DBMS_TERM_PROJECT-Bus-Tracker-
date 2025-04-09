@@ -32,7 +32,7 @@ export class BusService implements iBusService {
             // validations
             try {
                 this.validatorService.validString("Name", busData.bus_number);
-                this.validatorService.validString("Driver", busData.driver);                
+                // this.validatorService.validString("Driver", busData.driver);                
             } 
             catch (error: any) {
                 response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
@@ -53,6 +53,7 @@ export class BusService implements iBusService {
         }
     }
     async getAllBuses(
+        flag: boolean
     ): Promise<serviceResponse> {
         let response: serviceResponse = {
             statusCode: eStatusCode.BAD_REQUEST,
@@ -61,11 +62,21 @@ export class BusService implements iBusService {
         }
         try {
             // get all buses from the database bus model
-            const buses = await BusModel.find({},{
-                // return only bus_number and id
-                bus_number: 1,
-                _id: 1,
-            });
+            let buses;
+            if(flag) {
+                buses = await BusModel.find({ driver: { $eq: null } },{
+                    // return only bus_number and id
+                    bus_number: 1,
+                    _id: 1,
+                });
+            }
+            else{
+                buses = await BusModel.find({},{
+                    // return only bus_number and id
+                    bus_number: 1,
+                    _id: 1,
+                });
+            }
 
             response = setResponse(response, eStatusCode.OK, false,"Buses fetched successfully",buses);
             return response;
@@ -187,6 +198,59 @@ export class BusService implements iBusService {
             }
 
             response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
+            return response;
+        } catch (error) {
+            console.log("error: ", error);
+            return response;
+        }
+    }
+
+    async assignDriver(
+        busId: string,
+        driver: string
+    ): Promise<serviceResponse> {
+        let response: serviceResponse = {
+            statusCode: eStatusCode.BAD_REQUEST,
+            isError: true,
+            message: "failed to assign driver",
+        }
+        try {
+            try{
+                this.validatorService.validString("BusId", busId);
+                this.validatorService.validString("Driver", driver);
+            }
+            catch (error: any) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
+                return response;
+            }
+            // check the driver field of the bus is not null
+            let bus = await BusModel.findById(busId);
+            if(!bus) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not found");
+                return response;
+            }
+            if(bus.driver) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Driver already assigned to the bus");
+                return response;
+            }
+
+
+            // check whether the driver is registered with a bus (if registered remove from that bus)
+            const driverBus = await BusModel.findOne({driver});
+            if(driverBus) {
+                driverBus.driver = null;
+                await driverBus.save();
+            }
+
+            // assign driver to the bus by id from the database bus model
+            bus = await BusModel.findByIdAndUpdate(busId,{driver},{new:true});
+
+            if(!bus) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not found");
+                return response;
+            }
+
+            response = setResponse(response, eStatusCode.OK, false,"Driver assigned successfully");
             return response;
         } catch (error) {
             console.log("error: ", error);

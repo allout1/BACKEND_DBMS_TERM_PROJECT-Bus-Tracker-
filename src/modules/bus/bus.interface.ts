@@ -6,7 +6,6 @@ export interface BUS{
         location_id:string,
         time: number
     }[],
-    driver: string
 }
 
 export interface IBUSadd{
