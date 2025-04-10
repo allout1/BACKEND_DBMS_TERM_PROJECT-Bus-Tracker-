@@ -37,7 +37,6 @@ export class BusRoutes extends CommonRoutesConfig {
         this.app
             .route(`/${this.basePath}/${this.version}/bus/assignDriver`)
             .post([
-                authMiddleware.verifyToken,
                 busController.assignDriver
             ]);
 

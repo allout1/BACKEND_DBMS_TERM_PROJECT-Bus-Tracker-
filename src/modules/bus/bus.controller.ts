@@ -189,7 +189,7 @@ class BusController {
         res: express.Response
     ): Promise<void> {
         try {
-            const driver = String(req.body.userDetails.id);
+            const driver = String(req.body.driverId);
             const busId = String(req.body.busId);
             const response = await this.busService.assignDriver(busId,driver);
             if (response) {

@@ -39,6 +39,13 @@ export class BusService implements iBusService {
                 return response;
             }
 
+            // see if a bus with same bus number exists
+            const busExists = await BusModel.findOne({ bus_number: busData.bus_number });
+            if (busExists) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus already exists");
+                return response;
+            }
+
             // add a bus to the database bus model
             const bus = await new BusModel(busData).save();
             if (!bus) {
@@ -223,17 +230,18 @@ export class BusService implements iBusService {
                 response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
                 return response;
             }
-            // check the driver field of the bus is not null
+            // check the bus exists or not
             let bus = await BusModel.findById(busId);
             if(!bus) {
                 response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not found");
                 return response;
             }
-            if(bus.driver) {
-                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Driver already assigned to the bus");
+            // check the driver exists or not
+            const driverExists = await User.findById(driver);
+            if(!driverExists || driverExists.role !== "driver") {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Driver not found");
                 return response;
             }
-
 
             // check whether the driver is registered with a bus (if registered remove from that bus)
             const driverBus = await BusModel.findOne({driver});
@@ -246,7 +254,7 @@ export class BusService implements iBusService {
             bus = await BusModel.findByIdAndUpdate(busId,{driver},{new:true});
 
             if(!bus) {
-                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not found");
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Driver not assigned");
                 return response;
             }
 
