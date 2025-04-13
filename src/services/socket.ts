@@ -35,7 +35,7 @@ class SocketService {
       socket.on(
         "driver:stop",({bus_id}) => {
           console.log(`Driver ${bus_id} stopped`);
-          this.io.emit("bus:stopped",{ bus_id});
+          this.io.emit("bus:stopped",bus_id);
         }
       )
 
@@ -53,12 +53,12 @@ class SocketService {
       //   longitude: 87.309468 
       // });
 
-      this.io.emit("bus:locationUpdate", {
-        bus_id: "67f7af5bf4eb70888c442409",
-        bus_no: "A12345",
-        latitude: 22.220336,
-        longitude: 87.209468 
-      });
+      // this.io.emit("bus:locationUpdate", {
+      //   bus_id: "67f7af5bf4eb70888c442409",
+      //   bus_no: "A12345",
+      //   latitude: 22.220336,
+      //   longitude: 87.209468 
+      // });
     }, 5000);
   }
 
