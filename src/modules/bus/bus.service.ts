@@ -109,8 +109,16 @@ export class BusService implements iBusService {
                 return response;
             }
 
-            // get bus by destination from the database bus model
-            const bus = await BusModel.find({stoppage:{$elemMatch:{location:destination}}});
+            // get bus by destination from the database bus model by finding if the stoppages contains the destination
+            // and return only bus_number and id
+            const bus = await BusModel.find({stoppage:{$elemMatch:{location:destination}}},{
+                bus_number: 1,
+                _id: 1,
+            });
+            if(!bus) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not found");
+                return response;
+            }
 
             response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
             return response;
