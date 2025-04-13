@@ -32,20 +32,34 @@ class SocketService {
         }
       );
 
+      socket.on(
+        "driver:stop",({bus_id}) => {
+          console.log(`Driver ${bus_id} stopped`);
+          this.io.emit("bus:stopped",{ bus_id});
+        }
+      )
+
       socket.on("disconnect", () => {
         console.log(`Client disconnected: ${socket.id}`);
       });
     });
 
     // Broadcast default coordinates every 5 seconds for all clients
-    // setInterval(() => {
-    //   this.io.emit("bus:locationUpdate", {
-    //     bus_id: "67f03de57c9100e75a0380bf",
-    //     bus_no: "B-100",
-    //     latitude: 22.320336,
-    //     longitude: 87.309468 
-    //   });
-    // }, 5000);
+    setInterval(() => {
+      // this.io.emit("bus:locationUpdate", {
+      //   bus_id: "67f78ecffe147b12a0b85c03",
+      //   bus_no: "M12356",
+      //   latitude: 22.320336,
+      //   longitude: 87.309468 
+      // });
+
+      this.io.emit("bus:locationUpdate", {
+        bus_id: "67f7af5bf4eb70888c442409",
+        bus_no: "A12345",
+        latitude: 22.220336,
+        longitude: 87.209468 
+      });
+    }, 5000);
   }
 
   get _io() {
