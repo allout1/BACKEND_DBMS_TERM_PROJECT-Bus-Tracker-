@@ -21,6 +21,8 @@ class BusController {
         this.getBusById = this.getBusById.bind(this);   
         this.getBusByDriver = this.getBusByDriver.bind(this);
         this.assignDriver = this.assignDriver.bind(this);
+        this.getDrivers = this.getDrivers.bind(this);
+        this.getAllBusDetails = this.getAllBusDetails.bind(this);
     }
 
     async addBus(
@@ -192,6 +194,58 @@ class BusController {
             const driver = String(req.body.driverId);
             const busId = String(req.body.busId);
             const response = await this.busService.assignDriver(busId,driver);
+            if (response) {
+                responseHandler(
+                    res,
+                    response.statusCode,
+                    response.isError,
+                    response.message,
+                    response?.data
+                )
+            }
+        } catch (error) {
+            console.log(error);
+            responseHandler(
+                res,
+                eStatusCode.INTERNAL_SERVER_ERROR,
+                true,
+                error ? `${error}` : eErrorMessage.ServerError
+            );
+        }
+    }
+
+    async getDrivers(
+        req: express.Request,
+        res: express.Response
+    ): Promise<void> {
+        try {
+            const response = await this.busService.getDrivers();
+            if (response) {
+                responseHandler(
+                    res,
+                    response.statusCode,
+                    response.isError,
+                    response.message,
+                    response?.data
+                )
+            }
+        } catch (error) {
+            console.log(error);
+            responseHandler(
+                res,
+                eStatusCode.INTERNAL_SERVER_ERROR,
+                true,
+                error ? `${error}` : eErrorMessage.ServerError
+            );
+        }
+    }
+
+    async getAllBusDetails(
+        req: express.Request,
+        res: express.Response
+    ): Promise<void> {
+        try {
+            const response = await this.busService.getAllBusDetails();
             if (response) {
                 responseHandler(
                     res,

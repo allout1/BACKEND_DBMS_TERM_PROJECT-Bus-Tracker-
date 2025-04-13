@@ -266,5 +266,59 @@ export class BusService implements iBusService {
         }
     }
     
+    async getDrivers(): Promise<serviceResponse> {
+        let response: serviceResponse = {
+            statusCode: eStatusCode.BAD_REQUEST,
+            isError: true,
+            message: "failed to get drivers",
+        }
+        try {
+            // get all drivers from the database user model
+            const drivers = await User.find({role:"driver"}).select({
+                username:1,
+                email:1,
+                _id:1
+            });
+
+            response = setResponse(response, eStatusCode.OK, false,"Drivers fetched successfully",drivers);
+            return response;
+        } catch (error) {
+            console.log("error: ", error);
+            return response;
+        }
+    }
+
+    async getAllBusDetails(): Promise<serviceResponse> {
+        let response: serviceResponse = {
+            statusCode: eStatusCode.BAD_REQUEST,
+            isError: true,
+            message: "failed to get bus details",
+        }
+        try {
+            // get all buses from the database bus model
+            const buses = await BusModel.find()
+                        .populate({
+                            path: 'stoppage.location',
+                            model: 'Location',
+                            select: "-__v "
+                        })
+                        .populate({
+                            path: 'driver',
+                            model: 'User',
+                            select: "-password -__v -email -createdAt -updatedAt",
+                        })
+                        .select("-__v -createdAt -updatedAt -stoppage._id");
+
+            if(!buses) {
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, "No buses found");
+                return response;
+            }
+            response = setResponse(response, eStatusCode.OK, false,"Bus details fetched successfully",buses);
+            return response;
+        } catch (error) {
+            console.log("error: ", error);
+            return response;
+        }
+    }
 
 }

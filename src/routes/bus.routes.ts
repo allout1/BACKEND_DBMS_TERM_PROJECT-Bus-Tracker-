@@ -39,7 +39,15 @@ export class BusRoutes extends CommonRoutesConfig {
             .post([
                 busController.assignDriver
             ]);
+        this.app
+            .route(`/${this.basePath}/${this.version}/bus/getDrivers`)
+            .get([
+                busController.getDrivers
+            ]);
 
+        this.app
+            .route(`/${this.basePath}/${this.version}/bus/getAllBusDetails`)
+            .get(busController.getAllBusDetails);
 
         return this.app;
     }

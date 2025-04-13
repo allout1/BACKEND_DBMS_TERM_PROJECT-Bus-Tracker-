@@ -28,4 +28,9 @@ export interface iBusService {
         driverId: string
     ) => Promise<serviceResponse>;
 
+    getDrivers: (
+    ) => Promise<serviceResponse>;
+
+    getAllBusDetails:() => Promise<serviceResponse>;
+
 }
