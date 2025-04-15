@@ -1,6 +1,8 @@
 import express from 'express';
 import { CommonRoutesConfig } from '../config/router_config/common.route.config';
 import locationController from '../modules/location/location.controller';
+import authMiddleware from '../middlewares/auth.middleware';
+import rolesMiddleware from '../middlewares/roles.middleware';
 
 
 export class LocationRoutes extends CommonRoutesConfig {
@@ -11,17 +13,33 @@ export class LocationRoutes extends CommonRoutesConfig {
     configureRoutes() {
         this.app
             .route(`/${this.basePath}/${this.version}/location/add`)
-            .post(locationController.addLocation);
+            .post([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
+                locationController.addLocation
+            ]);
 
         this.app
             .route(`/${this.basePath}/${this.version}/location/get`)
-            .get(locationController.getLocations);
+            .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'user']),
+                locationController.getLocations
+            ]);
         this.app
             .route(`/${this.basePath}/${this.version}/location/getById`)
-            .get(locationController.getLocationById);
+            .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'user']),
+                locationController.getLocationById
+            ]);
         this.app
             .route(`/${this.basePath}/${this.version}/location/update`)
-            .put(locationController.updateLocation)
+            .put([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
+                locationController.updateLocation
+            ])
 
 
         return this.app;

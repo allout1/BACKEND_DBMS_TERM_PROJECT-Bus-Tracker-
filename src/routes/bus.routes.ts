@@ -2,6 +2,7 @@ import express from 'express';
 import { CommonRoutesConfig } from '../config/router_config/common.route.config';
 import busController from '../modules/bus/bus.controller';
 import authMiddleware from '../middlewares/auth.middleware';
+import rolesMiddleware from '../middlewares/roles.middleware';
 
 
 export class BusRoutes extends CommonRoutesConfig {
@@ -12,42 +13,71 @@ export class BusRoutes extends CommonRoutesConfig {
     configureRoutes() {
         this.app
             .route(`/${this.basePath}/${this.version}/bus/add`)
-            .post(busController.addBus);
+            .post([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
+                busController.addBus
+            ]);
 
         this.app
             .route(`/${this.basePath}/${this.version}/bus/get`)
-            .get(busController.getAllBuses);
+            .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'user']),
+                busController.getAllBuses
+            ]);
 
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getByDestination`)
-            .get(busController.getBusByDestination);
+            .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'user']),
+                busController.getBusByDestination
+            ]);
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getById`)
-            .get(busController.getBusById);
+            .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'user']),
+                busController.getBusById
+            ]);
             
         this.app
             .route(`/${this.basePath}/${this.version}/bus/delete`)
-            .delete(busController.deleteBus);
+            .delete([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
+                busController.deleteBus
+            ]);
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getByDriver`)
             .get([
                 authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'driver']),
                 busController.getBusByDriver
             ]);
         this.app
             .route(`/${this.basePath}/${this.version}/bus/assignDriver`)
             .post([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
                 busController.assignDriver
             ]);
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getDrivers`)
             .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
                 busController.getDrivers
             ]);
 
         this.app
             .route(`/${this.basePath}/${this.version}/bus/getAllBusDetails`)
-            .get(busController.getAllBusDetails);
+            .get([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin', 'user']),
+                busController.getAllBusDetails
+            ]);
 
         return this.app;
     }
