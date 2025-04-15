@@ -43,7 +43,13 @@ export class LocationService implements iLocationService {
             // add location
             const location = await new Location({name, geometry}).save();
 
-            response = setResponse(response, eStatusCode.OK, false,"Location added successfully",);
+            const result = {
+                name: location.name,
+                coordinates: location.geometry?.coordinates,
+                _id: location._id
+            }
+
+            response = setResponse(response, eStatusCode.OK, false,"Location added successfully",result);
             return response;
         } catch (error) {
             console.log("error: ", error);
