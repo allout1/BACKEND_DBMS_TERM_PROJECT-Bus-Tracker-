@@ -163,5 +163,34 @@ export class LocationService implements iLocationService {
             return response;
         }
     }
+    async deleteLocation(
+        id: string
+    ): Promise<serviceResponse> {
+        let response:serviceResponse = {
+            statusCode:eStatusCode.BAD_REQUEST,
+            isError:true,
+            message: "failed to delete location",
+        }
+        try{
+            try{
+                this.validatorService.validString("id",id);
+            }
+            catch(error:any){
+                response = setResponse(response, eStatusCode.BAD_REQUEST, true, error);
+                return response;
+            }
+            const loc = await Location.findByIdAndDelete(id);
+            if(!loc){
+                response = setResponse(response, eStatusCode.NOT_FOUND, true, "Location not found");
+                return response;
+            }
+            response = setResponse(response, eStatusCode.OK, false, "Location deleted successfully"); 
+            return response;
+        }
+        catch(error){
+            console.log("error: ", error);
+            return response;
+        }
+    }
 
 }

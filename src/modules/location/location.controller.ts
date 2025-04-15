@@ -18,7 +18,8 @@ class LocationController {
         this.addLocation = this.addLocation.bind(this);
         this.getLocations = this.getLocations.bind(this);
         this.getLocationById = this.getLocationById.bind(this);
-        this.updateLocation = this.updateLocation.bind(this);        
+        this.updateLocation = this.updateLocation.bind(this);       
+        this.deleteLocation = this.deleteLocation.bind(this); 
     }
 
     async addLocation(
@@ -128,7 +129,32 @@ class LocationController {
             );
         }
     }
-   
+    async deleteLocation(
+        req: express.Request,
+        res: express.Response
+    ): Promise<void> {
+        try {
+            const id = String(req.query.id);
+            const response = await this.locationService.deleteLocation(id);
+            if (response) {
+                responseHandler(
+                    res,
+                    response.statusCode,
+                    response.isError,
+                    response.message,
+                    response?.data
+                )
+            }
+        } catch (error) {
+            console.log(error);
+            responseHandler(
+                res,
+                eStatusCode.INTERNAL_SERVER_ERROR,
+                true,
+                error ? `${error}` : eErrorMessage.ServerError
+            );
+        }
+    }
 
 
 }

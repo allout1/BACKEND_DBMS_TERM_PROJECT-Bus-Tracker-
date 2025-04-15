@@ -15,4 +15,7 @@ export interface iLocationService {
         name: string|null,
         coordinates: number[]|null
     ) => Promise<any>;
+    deleteLocation: (
+        id: string
+    ) => Promise<any>;
 }
