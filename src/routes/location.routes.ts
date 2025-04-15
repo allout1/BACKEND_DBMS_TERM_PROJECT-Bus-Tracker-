@@ -39,7 +39,15 @@ export class LocationRoutes extends CommonRoutesConfig {
                 authMiddleware.verifyToken,
                 rolesMiddleware.verifyRole(['admin']),
                 locationController.updateLocation
+            ]);
+        this.app
+            .route(`/${this.basePath}/${this.version}/location/delete`)
+            .delete([
+                authMiddleware.verifyToken,
+                rolesMiddleware.verifyRole(['admin']),
+                locationController.deleteLocation
             ])
+            
 
 
         return this.app;
