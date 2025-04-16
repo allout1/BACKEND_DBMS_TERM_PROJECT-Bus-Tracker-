@@ -86,8 +86,9 @@ class BusController {
         res: express.Response
     ): Promise<void> {
         try {
+            const start = String(req.query.start);
             const destination = String(req.query.destination);
-            const response = await this.busService.getBusByDestination(destination);
+            const response = await this.busService.getBusByDestination(start,destination);
             if (response) {
                 responseHandler(
                     res,

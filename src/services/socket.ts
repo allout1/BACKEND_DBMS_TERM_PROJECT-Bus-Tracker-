@@ -47,8 +47,8 @@ class SocketService {
     // Broadcast default coordinates every 5 seconds for all clients
     setInterval(() => {
       // this.io.emit("bus:locationUpdate", {
-      //   bus_id: "67f78ecffe147b12a0b85c03",
-      //   bus_no: "M12356",
+      //   bus_id: "67fe33caac658ebae89d6a3e",
+      //   bus_no: "KGP-A1234",
       //   latitude: 22.320336,
       //   longitude: 87.309468 
       // });

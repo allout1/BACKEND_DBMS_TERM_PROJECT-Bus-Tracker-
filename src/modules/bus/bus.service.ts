@@ -93,6 +93,7 @@ export class BusService implements iBusService {
         }
     }
     async getBusByDestination(
+        start: string,
         destination: string
     ): Promise<serviceResponse> {
         let response: serviceResponse = {
@@ -111,16 +112,83 @@ export class BusService implements iBusService {
 
             // get bus by destination from the database bus model by finding if the stoppages contains the destination
             // and return only bus_number and id
-            const bus = await BusModel.find({stoppage:{$elemMatch:{location:destination}}},{
-                bus_number: 1,
-                _id: 1,
+            const buses = await BusModel.find({
+                stoppage: {
+                  $all: [
+                    { $elemMatch: { location: start } },
+                    { $elemMatch: { location: destination } }
+                  ]
+                }
+            })
+
+            let busesDetails:any[] = [];
+            const currentTime = new Date();
+            const currentMinute = currentTime.getMinutes();
+
+            buses.forEach((bus) => {
+                let min_start_time = 1000;
+                let min_end_time = 1000;
+                let start_index = -1;
+                let end_index = -1;
+
+                console.log("bus: ", bus);
+
+                bus.stoppage.forEach((stoppage,ind) => {
+                    
+                    if(stoppage.location.toString() === start) {
+                        let time = stoppage.time;
+                        if(time < currentMinute) time += 60;
+                        if(time < min_start_time) {
+                            min_start_time = time;
+                            start_index = ind;
+                        }
+                    }
+                })
+
+                console.log('strt_index: ', start_index);
+                
+                for(let i=start_index; i < bus.stoppage.length; i++) {
+                    if(bus.stoppage[i].location.toString() === destination) {
+                        min_end_time = bus.stoppage[i].time - bus.stoppage[start_index].time + min_start_time;
+                        end_index = i;
+                        break;
+                    }
+                }
+
+                if(end_index===-1){
+                    for(let i=0;i< start_index; i++){
+                        if(bus.stoppage[i].location.toString() === destination) {
+                            min_end_time = 60 - bus.stoppage[start_index].time + bus.stoppage[i].time + min_start_time;
+                            end_index = i;
+                            break;
+                        }
+                    }
+                }
+
+                busesDetails.push({
+                    bus_id: bus._id,
+                    bus_number: bus.bus_number,
+                    start_time: min_start_time,
+                    end_time: min_end_time
+                })
             });
-            if(!bus) {
+
+            // console.log("bus: ", busesDetails);
+
+            if(!buses) {
                 response = setResponse(response, eStatusCode.BAD_REQUEST, true, "Bus not found");
                 return response;
             }
 
-            response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",bus);
+            // sort busDetails by end_time
+            busesDetails.sort((a, b) => {
+                if (a.start_time === b.start_time) {
+                    return a.end_time - b.end_time;
+                }
+                return a.start_time - b.start_time;
+            });
+
+            response = setResponse(response, eStatusCode.OK, false,"Bus fetched successfully",busesDetails);
             return response;
         } catch (error) {
             console.log("error: ", error);

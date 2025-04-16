@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { BusModel } from "./bus.model";
 
 export const UserRolesEnum = {
   ADMIN: "admin",
@@ -38,5 +39,17 @@ const UserSchema = new Schema(
   },
   { timestamps: true }
 );
+
+// Pre-hook to remove driver references from BusModel before deleting
+UserSchema.pre('findOneAndDelete', async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) {
+    await BusModel.updateMany(
+      { driver: doc._id },
+      { $unset: { driver: "" } } // simulate SET NULL
+    );
+  }
+  next();
+});
 
 export const User = mongoose.model('User',UserSchema);

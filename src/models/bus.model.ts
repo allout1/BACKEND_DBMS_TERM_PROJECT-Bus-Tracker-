@@ -25,9 +25,9 @@ const BusSchema = new Schema({
     required: true,
     validate: {
       validator: function (v: any) {
-        return Array.isArray(v) && v.length > 0;
+        return Array.isArray(v);
       },
-      message: "At least one stoppage is required.",
+      message: "Stoppage must be an array of objects",
     },
   },
   driver: {

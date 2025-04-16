@@ -1,4 +1,5 @@
 import mongoose, { InferSchemaType, Schema } from "mongoose";
+import { BusModel } from "./bus.model";
 
 const locationSchema = new mongoose.Schema({
   name: {
@@ -21,6 +22,19 @@ const locationSchema = new mongoose.Schema({
 });
 
 locationSchema.index({ geometry: "2dsphere" });
+
+// Pre-hook to remove location references from BusModel before deleting
+locationSchema.pre('findOneAndDelete', async function (next) {
+  const doc = await this.model.findOne(this.getFilter());
+  if (doc) {
+    await BusModel.updateMany(
+      { "stoppage.location": doc._id },
+      { $pull: { stoppage: { location: doc._id } } }
+    );
+  }
+  next();
+});
+
 export const Location= mongoose.model("Location", locationSchema);
 
 export type LocationType = InferSchemaType<typeof locationSchema>;

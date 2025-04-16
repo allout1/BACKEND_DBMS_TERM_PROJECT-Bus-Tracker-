@@ -10,6 +10,7 @@ export interface iBusService {
         flag: boolean
     ) => Promise<serviceResponse>;
     getBusByDestination: (
+        start: string,
         destination: string
     ) => Promise<serviceResponse>;
     getBusById: (
