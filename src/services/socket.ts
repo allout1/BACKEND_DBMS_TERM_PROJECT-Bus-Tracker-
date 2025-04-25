@@ -1,7 +1,11 @@
+import Redis from "ioredis";
 import { Server } from "socket.io";
+import { REDIS_HOST, REDIS_PASSWORD, REDIS_PORT, REDIS_USER } from "../../secret";
 
 class SocketService {
   private io: Server;
+  private redisPublisher: Redis;
+  private redisSubscriber: Redis;
 
   constructor() {
     console.log("Starting the Bus Tracking Socket Server...");
@@ -13,6 +17,22 @@ class SocketService {
         allowedHeaders: ["*"],
       },
     });
+
+    this.redisPublisher = new Redis({
+      host: `${REDIS_HOST}`,
+      port: Number(REDIS_PORT),
+      password: `${REDIS_PASSWORD}`,
+      username: `${REDIS_USER}`,
+    });
+    this.redisSubscriber = new Redis({
+      host: `${REDIS_HOST}`,
+      port: Number(REDIS_PORT),
+      password: `${REDIS_PASSWORD}`,
+      username: `${REDIS_USER}`,
+    });
+
+    // subscribe to the redis channel named 'MESSAGES'
+    this.redisSubscriber.subscribe("bus_tracking");
   }
 
   public initListeners() {
@@ -28,14 +48,23 @@ class SocketService {
           );
 
           // Broadcast the location to all users
-          this.io.emit("bus:locationUpdate", { bus_id, bus_no, latitude, longitude });
+          this.redisPublisher.publish("bus:locationUpdate", JSON.stringify({
+            bus_id,
+            bus_no,
+            latitude,
+            longitude
+          }));
+          // this.io.emit("bus:locationUpdate", { bus_id, bus_no, latitude, longitude });
         }
       );
 
       socket.on(
         "driver:stop",({bus_id}) => {
           console.log(`Driver ${bus_id} stopped`);
-          this.io.emit("bus:stopped",bus_id);
+          this.redisPublisher.publish("bus:stop", JSON.stringify({
+            bus_id
+          }));
+          // this.io.emit("bus:stopped",bus_id);
         }
       )
 
@@ -60,6 +89,13 @@ class SocketService {
       //   longitude: 87.209468 
       // });
     }, 5000);
+
+    this.redisSubscriber.on("message", async (channel, message) => {
+      if (channel === "bus_tracking") {
+        const payload = JSON.parse(message);
+        this.io.to(payload.channelId).emit("message", message); 
+      }
+    });
   }
 
   get _io() {
