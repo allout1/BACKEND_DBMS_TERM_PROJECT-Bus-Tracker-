@@ -8,6 +8,7 @@ import JWTService from '../../services/jwtService';
 import { BUS } from "./bus.interface";
 import { BusService } from './bus.service';
 import { iBusService } from './iBusService';
+import { myCache } from '../../services/cache';
 class BusController {
     private readonly busService: iBusService;
     constructor(
@@ -36,6 +37,7 @@ class BusController {
             }
             const response = await this.busService.addBus(busData);
             if (response) {
+                myCache.del('allBusDetails');
                 responseHandler(
                     res,
                     response.statusCode,
@@ -116,6 +118,7 @@ class BusController {
             const id = String(req.query.id);
             const response = await this.busService.deleteBus(id);
             if (response) {
+                myCache.del('allBusDetails');
                 responseHandler(
                     res,
                     response.statusCode,
@@ -196,6 +199,7 @@ class BusController {
             const busId = String(req.body.busId);
             const response = await this.busService.assignDriver(busId,driver);
             if (response) {
+                myCache.del('allBusDetails');
                 responseHandler(
                     res,
                     response.statusCode,
@@ -246,8 +250,25 @@ class BusController {
         res: express.Response
     ): Promise<void> {
         try {
+            const cacheKey = 'allBusDetails';
+            const cachedData = myCache.get(cacheKey);
+
+            if (cachedData) {
+                responseHandler(
+                    res,
+                    eStatusCode.OK,
+                    false,
+                    'Successfully fetched all bus details from cache',
+                    cachedData
+                );
+                return;
+            }
+
             const response = await this.busService.getAllBusDetails();
-            if (response) {
+            console.log(response.data);
+            if (response && response.data && !response.isError) {
+                const plain = (response.data as any[]).map(doc => doc.toObject());
+                myCache.set(cacheKey, plain);
                 responseHandler(
                     res,
                     response.statusCode,

@@ -41,6 +41,7 @@
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.13.0",
+    "node-cache": "^5.1.2",
     "socketio": "^1.0.0"
   }
 }
