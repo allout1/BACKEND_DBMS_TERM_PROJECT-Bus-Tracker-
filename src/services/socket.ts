@@ -32,7 +32,7 @@ class SocketService {
     });
 
     // subscribe to the redis channel named 'MESSAGES'
-    this.redisSubscriber.subscribe("bus_tracking");
+    this.redisSubscriber.subscribe("bus:locationUpdate","bus:stop");
   }
 
   public initListeners() {
@@ -91,9 +91,12 @@ class SocketService {
     }, 5000);
 
     this.redisSubscriber.on("message", async (channel, message) => {
-      if (channel === "bus_tracking") {
+      try {
         const payload = JSON.parse(message);
-        this.io.to(payload.channelId).emit("message", message); 
+        console.log(`Received message from Redis channel ${channel}:`, payload);
+        this.io.emit(channel, payload);
+      } catch (error) {
+        console.error("Error parsing message from Redis:", error);
       }
     });
   }
